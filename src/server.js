@@ -7,6 +7,7 @@ import { mongodb_url, port } from "./constants.js";
 import authRouter from "./routes/AuthRouter.js";
 import userRouter from "./routes/UserRoute.js";
 import YAML from "yamljs";
+import { client } from "./postgressClient.js";
 
 const swaggerDocumentation = YAML.load("./swagger.yaml")
 const app = express()
@@ -24,6 +25,13 @@ mongoose.connect(mongodb_url)
     console.log("Oops, could not connect to the database", error.message)
 })
 
+client.connect()
+.then(()=>{
+    console.log("Successfully connected to the postgress database")
+})
+.catch((error)=>{
+    console.log("Oops, could not connect to the postgress database", error.message)
+})
 app.use('/api-docs',SwaggerUI.serve,SwaggerUI.setup(swaggerDocumentation))
 
 app.use('/auth',authRouter)
